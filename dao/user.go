@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"shopingCar_go/models"
 
 	"gorm.io/gorm"
@@ -59,10 +58,8 @@ func (d *Dao) SelectUser(email string) (*models.UserAccount, error) {
 
 func (d *Dao) GetUser(userId string) (*models.UserAccount, error) {
 	var user models.UserAccount
-	var user2 *models.UserAccount
-	fmt.Printf(">>>>>>>>>>>>%p", user2)
 	err := d.db.
-		Select("name", "email", "phone").
+		Select("name", "email", "phone", "created_at").
 		Where("user_id = ?", userId).
 		First(&user).Error
 	if err != nil {

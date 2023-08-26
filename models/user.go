@@ -17,12 +17,12 @@ type UserRegister struct {
 // table
 
 type UserAccount struct {
-	UserId    string    `gorm:"column:user_id;primaryKey"`
-	Password  string    `gorm:"column:password;not null"`
-	Name      string    `gorm:"column:name;not null"`
-	Email     string    `gorm:"column:email;not null;uniqueIndex"`
-	Phone     string    `gorm:"column:phone;not null"`
-	CreatedAt time.Time `gorm:"column:created_at;not null"`
+	UserId    string    `gorm:"column:user_id;primaryKey" form:"userId" json:"userId"`
+	Password  string    `gorm:"column:password;not null" form:"password" json:"password"`
+	Name      string    `gorm:"column:name;not null" form:"name" json:"name"`
+	Email     string    `gorm:"column:email;not null;uniqueIndex" form:"email" json:"email"`
+	Phone     string    `gorm:"column:phone;not null" form:"phone" json:"phone"`
+	CreatedAt time.Time `gorm:"column:created_at;not null" form:"createdAt" json:"createdAt"`
 }
 
 func (u UserAccount) TableName() string {
