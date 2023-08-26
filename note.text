@@ -1,0 +1,5 @@
+todo:
+clearDB 會殺超過1分鐘連接
+go-sql-driver 在 1.5 verson 有處理錯誤連接不到時自動連接的問題
+但 gorm 似乎還沒有，要繼續跟進 github 社群討論進度
+暫時處理方法為將 dbConnMaxIdleTime, dbConnMaxLifetime 設為50秒
