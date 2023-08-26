@@ -6,7 +6,9 @@ import (
 	"io"
 	"mime/multipart"
 	"path/filepath"
+
 	"shopingCar_go/constants"
+	"shopingCar_go/customerrors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +23,7 @@ func uploadImage(ctx *gin.Context, form *multipart.Form) {
 	var base64Files []string
 	for _, file := range files {
 		if file.Size > constants.MaxFileSize {
-			ErrorResponse(string(constants.MaxFileError), ctx, errors.New("invalid file extension"))
+			customerrors.ErrorResponse(string(constants.MaxFileError), ctx, errors.New("invalid file extension"))
 			return
 		}
 		ext := filepath.Ext(file.Filename)
@@ -33,12 +35,12 @@ func uploadImage(ctx *gin.Context, form *multipart.Form) {
 			}
 		}
 		if !validExtension {
-			ErrorResponse(string(constants.NotAllowedExtensionError), ctx, errors.New("extension not allowed"))
+			customerrors.ErrorResponse(string(constants.NotAllowedExtensionError), ctx, errors.New("extension not allowed"))
 			return
 		}
 		base64File, err := convertFileToBase64(file)
 		if err != nil {
-			ErrorResponse(string(constants.FileConversionError), ctx, errors.New("file conversion error"))
+			customerrors.ErrorResponse(string(constants.FileConversionError), ctx, errors.New("file conversion error"))
 			return
 		}
 		base64Files = append(base64Files, base64File)
