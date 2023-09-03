@@ -16,8 +16,8 @@ func ErrorResponse(errorCode string, ctx *gin.Context, err error) {
 	var status string
 	var message string
 
-	switch errorCode {
-	case string(constants.TypeError):
+	switch {
+	case errorCode == string(constants.TypeError):
 		var mysqlErr *mysql.MySQLError
 		if errors.As(err, &mysqlErr) {
 			mysqlErr = err.(*mysql.MySQLError)
@@ -31,20 +31,12 @@ func ErrorResponse(errorCode string, ctx *gin.Context, err error) {
 			status = string(constants.Invalid)
 			message = "no rows found"
 		}
-	case string(constants.MaxFileError):
-		status = string(constants.Invalid)
-		message = "invalid file extension"
-
-	case string(constants.NotAllowedExtensionError):
-		status = string(constants.Invalid)
-		message = "extension not allowed"
-
-	case string(constants.FileConversionError):
-		status = string(constants.Unexpected)
-		message = "file conversion error"
+	case errorCode != string(constants.Unexpected):
+		status = errorCode
+		message = err.Error()
 	}
 
-	if status == "" && message == "" {
+	if status == "" && message == "" || errorCode == string(constants.Unexpected) {
 		status = string(constants.Unexpected)
 		message = "unexpected error"
 	}

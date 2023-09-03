@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"encoding/base64"
 	"errors"
-	"io"
-	"mime/multipart"
+	"net/http"
 	"path/filepath"
 
 	"shopingCar_go/constants"
@@ -15,8 +13,7 @@ import (
 
 func (c *Controller) UploadImage(ctx *gin.Context) {
 	form, _ := ctx.MultipartForm()
-	files := form.File["avatar[]"]
-	var base64Files []string
+	files := form.File["avatar"]
 	for _, file := range files {
 		if file.Size > constants.MaxFileSize {
 			customerrors.ErrorResponse(string(constants.MaxFileError), ctx, errors.New("invalid file extension"))
@@ -24,7 +21,7 @@ func (c *Controller) UploadImage(ctx *gin.Context) {
 		}
 		ext := filepath.Ext(file.Filename)
 		var validExtension = false
-		allowedExtensions := []string{".jpg", ".jpeg", "png"}
+		allowedExtensions := []string{".jpg", ".jpeg", ".png"}
 		for _, allowedExt := range allowedExtensions {
 			if ext == allowedExt {
 				validExtension = true
@@ -34,29 +31,13 @@ func (c *Controller) UploadImage(ctx *gin.Context) {
 			customerrors.ErrorResponse(string(constants.NotAllowedExtensionError), ctx, errors.New("extension not allowed"))
 			return
 		}
-		base64File, err := convertFileToBase64(file)
-		if err != nil {
-			customerrors.ErrorResponse(string(constants.FileConversionError), ctx, errors.New("file conversion error"))
-			return
-		}
-		base64Files = append(base64Files, base64File)
 	}
-
-}
-
-func convertFileToBase64(file *multipart.FileHeader) (string, error) {
-	openedFile, err := file.Open()
+	_, err := c.service.UploadImage(files)
 	if err != nil {
-		return "", err
+		customerrors.ErrorResponse(string(constants.TypeError), ctx, err)
+		return
 	}
-	defer openedFile.Close()
-
-	buffer := make([]byte, file.Size)
-	_, err = openedFile.Read(buffer)
-	if err != nil && err != io.EOF {
-		return "", err
-	}
-
-	base64String := base64.StdEncoding.EncodeToString(buffer)
-	return base64String, nil
+	ctx.JSON(http.StatusOK, gin.H{
+		"ok": true,
+	})
 }

@@ -26,6 +26,11 @@ func NewRouter(c *controllers.Controller, connection *gorm.DB) *gin.Engine {
 		userRoutes.GET("/get", authenticate, c.Get)
 	}
 
+	photoRoutes := router.Group("/photo")
+	{
+		photoRoutes.POST("/upload", c.UploadImage)
+	}
+
 	return router
 
 }
